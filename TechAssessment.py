@@ -14,27 +14,26 @@ def create_HTTP_request(targetURL, dictionary):
     request.add_header('Content-Type', 'application/json')
     return urllib2.urlopen(request, json.dumps(dictionary))
 
-# this endpoint will return a string and an array containing that string along with others
-targetURL = 'http://challenge.code2040.org/api/haystack'
+# this endpoint will return a JSON with keys 'prefix' and 'array'
+targetURL = 'http://challenge.code2040.org/api/prefix'
 dictionary = {'token': '30e2d792d1001d661697aed566e0341a'}
 response = create_HTTP_request(targetURL, dictionary)
 
+# {'prefix': ---, 'array': [---, ---, ---, ...]}
 input = json.load(response)
-needle = input['needle']
-needlePosition = -1
-haystackSize = len(input['haystack'])
-for i in range(0, haystackSize):
-    if needle == input['haystack'][i]:
-        # found the needle in the haystack
-        needlePosition = i
-        break
+prefix = input['prefix']
 
-# make sure nothing went wrong before attempting to validate
-if needlePosition != -1:
-    # return the needles position in the haystack to this url for validation
-    targetURL = 'http://challenge.code2040.org/api/haystack/validate'
-    dictionary = {'token': '30e2d792d1001d661697aed566e0341a', 'needle': needlePosition}
-    create_HTTP_request(targetURL, dictionary)
+# find the words in the array that DON'T start with the given prefix
+output = []
+prefixLength = len(prefix)
+arraySize = len(input['array'])
+for i in range(0, arraySize):
+    currentWord = input['array'][i]
+    if currentWord[0:prefixLength] != prefix:
+        # found a word that DOESN'T start with the prefix
+        output.append(currentWord)
 
-else:
-    print 'ERROR: The needle was not found in the haystack'
+# return the list of words that DON'T start with the given prefix
+targetURL = 'http://challenge.code2040.org/api/prefix/validate'
+dictionary = {'token': '30e2d792d1001d661697aed566e0341a', 'array': output}
+create_HTTP_request(targetURL, dictionary)
