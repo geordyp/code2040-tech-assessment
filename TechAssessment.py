@@ -96,7 +96,7 @@ if month > 12:
 
 output = numToStr(year) + '-' + numToStr(month) + '-' + numToStr(day) + 'T' + numToStr(hour) + ':' + numToStr(minute) + ':' + numToStr(second) + 'Z'
 
-# return the list of words that DON'T start with the given prefix
+# return the datestamp with the added interval
 targetURL = 'http://challenge.code2040.org/api/dating/validate'
 dictionary = {'token': '30e2d792d1001d661697aed566e0341a', 'datestamp': output}
 create_HTTP_request(targetURL, dictionary)
